@@ -1,0 +1,31 @@
+{
+  "name": "activity",
+  "version": "1.0.1",
+  "description": "The official Activity bot for Darkness Alley!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarioTheCoder/Activity-Bot.git"
+  },
+  "keywords": [
+    "karioton",
+    "discord",
+    "bot",
+    "activity",
+    "darknessalley"
+  ],
+  "author": "KarioTheCoder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KarioTheCoder/Activity-Bot/issues"
+  },
+  "homepage": "https://github.com/KarioTheCoder/Activity-Bot#readme",
+  "dependencies": {
+    "discord.js": "^13.8.0",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.5"
+  }
+}

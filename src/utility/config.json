@@ -1,0 +1,6 @@
+{
+  "prefix" : "!",
+  
+  "BOT_TOKEN" : "_ENV",
+  "MONGO_URL" : "_ENV"
+}
