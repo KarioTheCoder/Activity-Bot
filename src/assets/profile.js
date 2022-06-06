@@ -5,17 +5,8 @@ const schema = mongoose.Schema({
     type: String,
     unique: true
   },
-  guildID: {
-    type: String
-  },
-
-  messageCountByTimestamp: {
-    type: Map
-    //Key Format: date:hour
-  },
-  messageCountByChannel: {
-    type: Map
-    //Key Format: channelID
+  messages: {
+    type: Array
   }
 });
 

@@ -2,5 +2,9 @@
   "prefix" : "!",
   
   "BOT_TOKEN" : "_ENV",
-  "MONGO_URL" : "_ENV"
+  "MONGO_URL" : "_ENV",
+
+  "commands" : {
+    
+  }
 }

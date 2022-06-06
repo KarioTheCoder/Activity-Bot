@@ -1,0 +1,48 @@
+const activity = require('../utility/activity.js');
+
+module.exports = {
+  name: 'profile',
+  aliases: ['pf', 'pro', 'userinfo', 'ui', 'stats'],
+  execute: async function(message, client) {
+
+    const args = message.content.split(' ');
+    const target = message.guild.members.cache.find(m => 
+     m.user.id === args[1] || m.user.tag === args[1] || m.user.id === args[1]?.slice(2, -1)) || message.member;
+
+
+    if(target.user.bot)
+      return message.channel.send({
+        embeds: [{
+          color: 0xFF0000,
+          description: `Activity for bots isn't stored!`
+        }]
+      });
+      
+    const memberPf = await activity.fetchProfile(target.user.id, target.guild.id);
+    
+    message.channel.send({
+      embeds: [{
+        color: 0xFFFFFF,
+        author: {
+          name: `${target.user.tag}'s Activity | ${target.guild.name}`,
+          iconURL: client.user.displayAvatarURL(),
+        },
+        thumbnail: {
+          url: target.user.displayAvatarURL(),
+        },
+        footer: {
+          text: 'Displaying Global Activity'
+        },
+        fields: [
+          {
+            name: 'Total Messages',
+            value: memberPf.messages.length.toLocaleString(),
+          },
+          {
+            name: 
+          }
+        ]
+      }]
+    });
+  }
+}

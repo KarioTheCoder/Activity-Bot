@@ -1,6 +1,6 @@
 ### Activity++
 
-The official activity manager bot for [Darkness Alley](https://discord.gg/bqkTK6ubJA)!
+The official activity manager bot for [Darkness Alley](https://discord.gg/bqkTK6ubJA)! *We don't support change-logs!*
 
 Easily customizable and usable by anyone!
 
