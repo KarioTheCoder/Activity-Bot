@@ -8,7 +8,10 @@ module.exports = client => {
     const command = message.content?.slice(prefix.length).toLowerCase().split(' ')[0] || '';
 
     const memberPf = await activity.fetchProfile(message.author.id, message.guild.id);
-    await activity.pushMessage(memberPf, message);
+    activity.pushMessage(memberPf, message);
+
+    if(message.content.startsWith(`<@${client.user.id}>`))
+      return client.commands.get('help')?.execute(message, client);
     
     if(message.content?.toLowerCase().startsWith(prefix.toLowerCase()) &&
       client.commands.has(command)) {

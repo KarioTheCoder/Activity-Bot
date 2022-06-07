@@ -36,5 +36,7 @@ module.exports = {
       channelID: message.channel.id,
     });
     await memberPf.save();
-  }
+  },
+
+  processedPf: require(`./processedPf.js`)
 }
