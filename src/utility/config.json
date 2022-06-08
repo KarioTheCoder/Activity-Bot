@@ -5,6 +5,8 @@
   "MONGO_URL" : "_ENV",
 
   "commands" : {
-    
+    "profile" : {
+      "inactivityTimeout" : 15e3
+    }
   }
 }

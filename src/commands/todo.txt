@@ -1,0 +1,2 @@
+Compare Command
+Leaderboard Command

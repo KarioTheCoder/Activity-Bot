@@ -1,3 +1,8 @@
+const {
+  MessageSelectMenu,
+  MessageActionRow
+} = require('discord.js');
+
 const activity = require('../utility/activity.js');
 
 module.exports = {
@@ -17,8 +22,6 @@ module.exports = {
           description: `Activity for bots isn't stored!`
         }]
       });
-      
-    const memberPf = await activity.fetchProfile(target.user.id, target.guild.id);
 
     const display = await message.channel.send({
       embeds: [{
@@ -29,38 +32,59 @@ module.exports = {
         }
       }]
     });
-
-    const processStart = display.createdTimestamp;
+    
+    const memberPf = await activity.fetchProfile(target.user.id, target.guild.id);
     
     const processedPf = new activity.processedPf(
-      target,
       memberPf.messages.filter(m => target.guild.channels.cache.has(m.channelID))
     );
 
-    display.edit({
-      embeds: [{
-        color: 0xFFFFFF,
-        
-        author: {
-          name: `${target.user.tag} | ${target.guild.name}`,
-          iconURL: target.user.displayAvatarURL()
-        },
-        
-        thumbnail: {
-          url: client.user.displayAvatarURL()
-        },
+    processedPf.generateEmbeds(target, client);
+    
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageSelectMenu()
+          .setCustomId('PF_DISPLAY_TYPE')
+          .setPlaceholder('Select Profile Type')
+          .addOptions([
+            {
+              label: 'Basic',
+              value: `TYPE_BASIC`,
+              default: true
+            },
+            {
+              label: 'Week Stats',
+              value: `TYPE_WEEKSTATS`
+            }
+          ])
+      );
 
-        fields: [
-          {
-            name: `Total Messages`,
-            value: processedPf.messages.total.toLocaleString()
-          }
-        ],
-        
-        footer: {
-          text: `Processed in ${Date.now() - processStart}ms`
-        }
-      }]
+    await display.edit({
+      embeds: [processedPf.embeds['TYPE_BASIC']],
+      components: [row]
     });
+
+    const collector = display.createMessageComponentCollector({
+      time: client.config.commands.profile.inactivityTimeout
+    });
+
+
+    collector.on('collect', async selection => {
+      if(selection.user.id !== message.author.id)
+        return selection.reply({
+          embeds: [{
+            color: 0xFF0000,
+            description: `This menu isn't for you!`
+          }],
+          ephemeral: true
+        });
+    });
+    
+    collector.on('end', async () => {
+      row.components[0].setDisabled(true);
+      display.edit({
+        components: [row]
+      });
+    });    
   }  
 }

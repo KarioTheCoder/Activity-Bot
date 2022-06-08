@@ -1,1 +1,3 @@
-memberPf : memberProfile
+memberPf : Guild Member Profile
+processedPf : Processed Profile
+i_day: Indexed Day
