@@ -19,7 +19,7 @@ module.exports = {
       return message.channel.send({
         embeds: [{
           color: 0xFF0000,
-          description: `Activity for bots isn't stored!`
+          description: `Bots' activities aren't stored!`
         }]
       });
 
@@ -34,10 +34,16 @@ module.exports = {
     });
     
     const memberPf = await activity.fetchProfile(target.user.id, target.guild.id);
+
+    const memberGuildMsgs = memberPf.messages.filter(m => target.guild.channels.cache.has(m.channelID));
+    if(memberGuildMsgs.length < 1) {
+      return display.edit({
+        color: 0xFF0000,
+        description: `${target.user.tag} needs to send at least 1 message before their activities start recording!`
+      });
+    }
     
-    const processedPf = new activity.processedPf(
-      memberPf.messages.filter(m => target.guild.channels.cache.has(m.channelID))
-    );
+    const processedPf = new activity.processedPf(memberGuildMsgs);
 
     processedPf.generateEmbeds(target, client);
     
@@ -55,6 +61,10 @@ module.exports = {
             {
               label: 'Week Stats',
               value: `TYPE_WEEKSTATS`
+            },
+            {
+              label: 'Channel Stats',
+              value: 'TYPE_CHANNELSTATS'
             }
           ])
       );
@@ -65,6 +75,7 @@ module.exports = {
     });
 
     const collector = display.createMessageComponentCollector({
+      filter: i => i.isSelectMenu(),
       time: client.config.commands.profile.inactivityTimeout
     });
 
@@ -78,6 +89,13 @@ module.exports = {
           }],
           ephemeral: true
         });
+
+      row.components[0].options.forEach(opt => opt.default = opt.value === selection.values[0]);
+      
+      selection.update({
+        embeds: [processedPf.embeds[selection.values[0]]],
+        components: [row]
+      });
     });
     
     collector.on('end', async () => {
