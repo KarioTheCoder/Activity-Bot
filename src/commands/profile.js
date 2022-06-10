@@ -53,12 +53,11 @@ module.exports = {
       .addComponents(
         new MessageSelectMenu()
           .setCustomId('PF_DISPLAY_TYPE')
-          .setPlaceholder('Select Profile Type')
+          .setPlaceholder('Browse Types')
           .addOptions([
             {
               label: 'Basic',
-              value: `TYPE_BASIC`,
-              default: true
+              value: `TYPE_BASIC`
             },
             {
               label: 'Week Stats',
@@ -83,20 +82,22 @@ module.exports = {
 
 
     collector.on('collect', async selection => {
-      if(selection.user.id !== message.author.id)
-        return selection.reply({
+      if(selection.user.id !== message.author.id) {
+        selection.reply({
           embeds: [{
             color: 0xFF0000,
             description: `This menu isn't for you!`
           }],
           ephemeral: true
         });
-
-      row.components[0].options.forEach(opt => opt.default = opt.value === selection.values[0]);
+        
+        return display.edit({
+          components: [row]
+        });
+      }
       
       selection.update({
-        embeds: [processedPf.embeds[selection.values[0]]],
-        components: [row]
+        embeds: [processedPf.embeds[selection.values[0]]]
       });
     });
     

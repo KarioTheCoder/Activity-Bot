@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const profile = require('../assets/profile.js');
+const profileSchema = require('../assets/profileSchema.js');
 
 const cache = new Map();
 
@@ -12,12 +12,12 @@ module.exports = {
     if(cache.has(uid)) 
       return cache.get(uid);
 
-    let fetched = await profile.findOne({
+    let fetched = await profileSchema.findOne({
       userID: uid
     });
 
     if(!fetched)
-      fetched = new profile({
+      fetched = new profileSchema({
         userID: uid,
         messages: []
       });
@@ -38,5 +38,5 @@ module.exports = {
     await memberPf.save();
   },
 
-  processedPf: require(`./processedPf.js`)
+  processedPf: require(`../processors/processedPf.js`),
 }

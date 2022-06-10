@@ -64,7 +64,7 @@ module.exports = class processedPf {
   generateEmbeds(member, client) {
 
     const daysOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const maxChannels = 5;
+    const { maxChannels } = client.config.processors.profile;
     
     this.embeds = {
       'TYPE_BASIC' : {
@@ -118,7 +118,7 @@ module.exports = class processedPf {
       },
 
       'TYPE_CHANNELSTATS' : {
-        color: 0xFFFF00, //Change to white when done
+        color: 0xFFFFFF, //Change to white when done
         
         author: {
           name: `${member.user.tag} | ${member.guild.name}`,
@@ -129,12 +129,14 @@ module.exports = class processedPf {
           url: client.user.displayAvatarURL()
         },
 
-        description: `> Displaying messae stats for top \`${maxChannels}\` channels`,
+        description: `> Displaying messae stats for upto \`${maxChannels}\` channels`,
 
-        fields: Array.from(this.messageStats.channelStats).map(c => {
+        fields: Array.from(this.messageStats.channelStats)
+          .sort((a, b) => b[1].totalMsgs - a[1].totalMsgs)
+          .slice(0, maxChannels).map(c => {
           return {
             name: client.channels.cache.get(c[0]).name,
-            value: `Total: ${c[1].totalMsgs.toLocaleString()} (\`${Math.round(c[1].msgsConstitute * 10) / 10}\`%)\nDaily Average: ${c[1].averageMsgs.toLocaleString()}`
+            value: `Total: ${c[1].totalMsgs.toLocaleString()} (\`${Math.round(c[1].msgsConstitute * 10) / 10}\`%)\nDaily Average: ${c[1].averageMsgs.toLocaleString()}\nChannel Mention: <#${c[0]}>`
           }
         })
       }

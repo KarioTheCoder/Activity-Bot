@@ -4,9 +4,25 @@
   "BOT_TOKEN" : "_ENV",
   "MONGO_URL" : "_ENV",
 
+  "emojis" : {
+    "first" : "<:ds_first:979390740885016646>",
+    "second" : "<:ds_second:979390740784373780>",
+    "third" : "<:ds_third:979390740771795074>",
+    "fourth" : ":sparkles:"
+  },
+  
   "commands" : {
     "profile" : {
       "inactivityTimeout" : 15e3
+    },
+    "leaderboard" : {
+      "maxMembers" : 10
+    }
+  },
+
+  "processors" : {
+    "profile" : {
+      "maxChannels" : 5
     }
   }
 }
