@@ -11,13 +11,15 @@ module.exports = class processedPf {
       weekStats: [
         
       ],
-      channelStats: {
-        
-      }
+      channelStats: new Map()
     }
 
-    // --- WEEK STATS ---
-    const { weekStats } = this.messageStats;
+    // --- WEEK STATS --- && --- CHANNEL STATS ---
+    const {
+      total,
+      weekStats,
+      channelStats
+    } = this.messageStats;
     
     for(let i = 0; i < 7; ++i) {
       weekStats[i] = {
@@ -35,11 +37,25 @@ module.exports = class processedPf {
 
     for(let i = 0; i < messages.length; ++i) {
       weekStats[new Date(messages[i].timestamp).getDay()].totalMsgs++;
+
+      if(!channelStats.has(messages[i].channelID))
+        channelStats.set(messages[i].channelID, {
+          totalMsgs: 0,
+          msgsConstitute: 0,
+          averageMsgs: 0
+        });
+
+      channelStats.get(messages[i].channelID).totalMsgs++;
     }
 
     for(let i = 0; i < 7; ++i) {
-      weekStats[i].msgsConstitute = (weekStats[i].totalMsgs * 100) /  this.messageStats.total;
+      weekStats[i].msgsConstitute = (weekStats[i].totalMsgs * 100) /  total;
       weekStats[i].averageMsgs = daysOfWeekTotals[i] > 0 ? weekStats[i].totalMsgs / daysOfWeekTotals[i] : 0;
+    }
+
+    for(const pair of channelStats) {
+      pair[1].msgsConstitute = (pair[1].totalMsgs * 100) / total;
+      pair[1].averageMsgs = pair[1].totalMsgs / daysSinceFirstMsg;
     }
     
     //this.generateEmbeds();
@@ -48,6 +64,7 @@ module.exports = class processedPf {
   generateEmbeds(member, client) {
 
     const daysOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const maxChannels = 5;
     
     this.embeds = {
       'TYPE_BASIC' : {
@@ -112,7 +129,14 @@ module.exports = class processedPf {
           url: client.user.displayAvatarURL()
         },
 
-        description: 'Work in progress...'
+        description: `> Displaying messae stats for top \`${maxChannels}\` channels`,
+
+        fields: Array.from(this.messageStats.channelStats).map(c => {
+          return {
+            name: client.channels.cache.get(c[0]).name,
+            value: `Total: ${c[1].totalMsgs.toLocaleString()} (\`${Math.round(c[1].msgsConstitute * 10) / 10}\`%)\nDaily Average: ${c[1].averageMsgs.toLocaleString()}`
+          }
+        })
       }
     }
   }

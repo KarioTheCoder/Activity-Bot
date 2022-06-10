@@ -25,10 +25,10 @@ module.exports = {
 
     const display = await message.channel.send({
       embeds: [{
-        color: 0xFFFF00,
+        color: 0xFFFF00,  
         description: `**Processing the activity for \`${target.user.tag}\` in \`${target.guild.name}\`**`,
         image: {
-          url: 'https://24.media.tumblr.com/f678ce38eb896bc1d4aaa911958af087/tumblr_n2eccv6Dev1rgpzseo1_1280.gif'
+          url: 'https://i.pinimg.com/originals/a2/dc/96/a2dc9668f2cf170fe3efeb263128b0e7.gif'
         }
       }]
     });
@@ -38,8 +38,10 @@ module.exports = {
     const memberGuildMsgs = memberPf.messages.filter(m => target.guild.channels.cache.has(m.channelID));
     if(memberGuildMsgs.length < 1) {
       return display.edit({
-        color: 0xFF0000,
-        description: `${target.user.tag} needs to send at least 1 message before their activities start recording!`
+        embeds: [{
+          color: 0xFF0000,
+          description: `${target.user.tag} needs to send at least one message for their activites to start being recorded!`
+        }]
       });
     }
     
