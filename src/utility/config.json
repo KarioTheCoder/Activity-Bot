@@ -16,7 +16,8 @@
       "inactivityTimeout" : 15e3
     },
     "leaderboard" : {
-      "maxMembers" : 10
+      "maxMembers" : 10,
+      "inactivityTimeout" : 15e3
     }
   },
 

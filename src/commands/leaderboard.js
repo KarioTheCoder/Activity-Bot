@@ -29,7 +29,7 @@ module.exports = {
         continue;
       }
 
-      guildMembers.set(pair[0], guildMessages);
+      guildMembers.set(pair[0], new activity.processedPf(guildMessages));
     }
 
     if(guildMembers.size < 1)
@@ -47,31 +47,98 @@ module.exports = {
       third,
       fourth
     } = client.config.emojis;
-    
-    return display.edit({
-      embeds: [{
-        color: 0xFFFFFF,
 
-        author: {
-          name: `Leaderboard | ${message.guild.name}`,
-          iconURL: client.user.displayAvatarURL()
-        },
+    const topMsgsEmbed = {
+      color: 0xFFFFFF,
 
-        thumbnail: {
-          url: message.guild.iconURL()
-        },
+      author: {
+        name: `Leaderboard | ${message.guild.name}`,
+        iconURL: client.user.displayAvatarURL()
+      },
 
-        description: `> Displaying upto \`${maxMembers}\` members`,
-        
-        fields: Array.from(guildMembers)
-          .sort((a, b) => b[1].length - a[1].length)
-          .slice(0, maxMembers).map((m, i) => {
-            return {
-              name: `${[first, second, third][i] || fourth} ${client.users.cache.get(m[0])?.tag || `Unkown#????`}`,
-              value: `${m[1].length.toLocaleString()} ${m[1].length > 1 ? 'messages' : 'message'}`
+      thumbnail: {
+        url: message.guild.iconURL()
+      },
+
+      description: `> Displaying upto \`${maxMembers}\` members`,
+      
+      fields: Array.from(guildMembers)
+        .sort((a, b) => b[1].messageStats.total - a[1].messageStats.total)
+        .slice(0, maxMembers).map((m, i) => {
+          return {
+            name: `${[first, second, third][i] || fourth} ${client.users.cache.get(m[0])?.tag || `Unkown#????`}`,
+            value: `${m[1].messageStats.total.toLocaleString()} ${m[1].messageStats.total > 1 ? 'messages' : 'message'}`
+          }
+        }),
+    }
+
+    const avgMsgsEmbed = JSON.parse(JSON.stringify(topMsgsEmbed));
+    avgMsgsEmbed.fields = Array.from(guildMembers)
+      .sort((a, b) => b[1].messageStats.dayAverage - a[1].messageStats.dayAverage)
+      .slice(0, maxMembers).map((m, i) => {
+        return {
+          name: `${[first, second, third][i] || fourth} ${client.users.cache.get(m[0])?.tag || `Unkown#????`}`,
+          value: `${Math.round(m[1].messageStats.dayAverage).toLocaleString()} average messages / day`
+        }
+      });
+
+      const row = new MessageActionRow()
+      .addComponents(
+        new MessageSelectMenu()
+          .setCustomId('PF_DISPLAY_TYPE')
+          .setPlaceholder('Browse Sorting Types')
+          .addOptions([
+            {
+              label: 'Total Messages',
+              value: `SORT_TOTAL`
+            },
+            {
+              label: 'Average Daily Messages',
+              value: `SORT_DAYAVERAGE`
             }
-          })
-      }]
+          ])
+      );
+
+    const sortingTypes = {
+      'SORT_TOTAL' : topMsgsEmbed,
+      'SORT_DAYAVERAGE' : avgMsgsEmbed
+    }
+    
+    await display.edit({
+      embeds: [topMsgsEmbed],
+      components: [row]
     });
+
+    const collector = display.createMessageComponentCollector({
+      filter: i => i.isSelectMenu(),
+      time: client.config.commands.leaderboard.inactivityTimeout
+    });
+
+    collector.on('collect', async selection => {
+      if(selection.user.id !== message.author.id) {
+        selection.reply({
+          embeds: [{
+            color: 0xFF0000,
+            description: `This menu isn't for you!`
+          }],
+          ephemeral: true
+        });
+        
+        return display.edit({
+          components: [row]
+        });
+      }
+      
+      selection.update({
+        embeds: [sortingTypes[selection.values[0]]]
+      });
+    });
+    
+    collector.on('end', async () => {
+      row.components[0].setDisabled(true);
+      display.edit({
+        components: [row]
+      });
+    });    
   }
 }

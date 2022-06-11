@@ -111,7 +111,7 @@ module.exports = class processedPf {
         fields: this.messageStats.weekStats.map((day, i) => {
           return {
             name: daysOfWeekNames[i],
-            value: `Total: ${day.totalMsgs.toLocaleString()} (\`${Math.round(day.msgsConstitute * 10) / 10}\`%)\nAverage: ${Math.round(day.averageMsgs.toLocaleString())}`,
+            value: `Total: ${day.totalMsgs.toLocaleString()} (\`${Math.round(day.msgsConstitute * 10) / 10}\`%)\nAverage: ${Math.round(day.averageMsgs).toLocaleString()}`,
             inline: true
           }
         })
