@@ -1,2 +1,2 @@
 Compare Command
-Leaderboard Command
+Channel Leaderboard Command

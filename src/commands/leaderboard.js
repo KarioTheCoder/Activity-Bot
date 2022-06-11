@@ -60,7 +60,7 @@ module.exports = {
         url: message.guild.iconURL()
       },
 
-      description: `> Displaying upto \`${maxMembers}\` members`,
+      description: `> Displaying up to \`${maxMembers}\` members`,
       
       fields: Array.from(guildMembers)
         .sort((a, b) => b[1].messageStats.total - a[1].messageStats.total)
@@ -75,7 +75,7 @@ module.exports = {
     const avgMsgsEmbed = JSON.parse(JSON.stringify(topMsgsEmbed));
     avgMsgsEmbed.fields = Array.from(guildMembers)
       .sort((a, b) => b[1].messageStats.dayAverage - a[1].messageStats.dayAverage)
-      .slice(0, maxMembers).map((m, i) => {
+      .slice(0, maxMembers).filter(m => Math.round(m[1].messageStats.dayAverage) >= 1).map((m, i) => {
         return {
           name: `${[first, second, third][i] || fourth} ${client.users.cache.get(m[0])?.tag || `Unkown#????`}`,
           value: `${Math.round(m[1].messageStats.dayAverage).toLocaleString()} average messages / day`

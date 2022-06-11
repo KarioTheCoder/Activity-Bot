@@ -129,7 +129,7 @@ module.exports = class processedPf {
           url: client.user.displayAvatarURL()
         },
 
-        description: `> Displaying messae stats for upto \`${maxChannels}\` channels`,
+        description: `> Displaying messae stats for up to \`${maxChannels}\` channels`,
 
         fields: Array.from(this.messageStats.channelStats)
           .sort((a, b) => b[1].totalMsgs - a[1].totalMsgs)

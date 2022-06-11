@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const profileSchema = require('../assets/profileSchema.js');
 
 const cache = new Map();
+const beingSaved = new Set();
 
 module.exports = {
   connect: async function(client) {
@@ -35,7 +36,13 @@ module.exports = {
       timestamp: message.createdTimestamp,
       channelID: message.channel.id,
     });
-    await memberPf.save();
+
+    //Avoid parallel saving
+    if(!beingSaved.has(memberPf.userID)) {
+      beingSaved.add(memberPf.userID);
+      await memberPf.save();
+      beingSaved.delete(memberPf.userID);
+    }
   },
 
   processedPf: require(`../processors/processedPf.js`),
